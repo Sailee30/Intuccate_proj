@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Helpify AI</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        body { background: #0f172a; color: white; min-height: 100vh; }
+    </style>
+</head>
+
+<body class="p-4 md:p-10">
+
+    <div class="max-w-4xl mx-auto">
+
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-400">
+                 Helpify AI
+            </h1>
+            <p class="text-slate-400 mt-2">answer to all your questions</p>
+        </header>
+
+        <div class="glass rounded-2xl p-6 shadow-2xl">
+            <h2 class="text-lg font-semibold mb-4 text-emerald-400">Question List</h2>
+
+            <p class="text-xs text-slate-500 mb-2 font-mono">Separate each question with a new line (Enter)</p>
+
+            <textarea id="bulk-input" rows="8"
+                class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                placeholder="Enter your questions here"></textarea>
+
+            <button id="send-btn"
+                class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg active:scale-95">
+                send
+            </button>
+        </div>
+
+        <div id="loader" class="hidden mt-8 text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"></div>
+            <p class="text-slate-400 mt-2 font-mono text-sm">Executing Asyncio.gather()...</p>
+        </div>
+
+        <div id="results" class="mt-8 space-y-4"></div>
+    </div>
+    <script>
+        const input = document.getElementById('bulk-input');       
+        const resultsDiv = document.getElementById('results');     
+        const loader = document.getElementById('loader');          // Loading spinner element
+        const btn = document.getElementById('send-btn');           // Submit button
+
+        btn.onclick = async () => {
+            const rawValue = input.value.trim();
+
+            if (!rawValue) return alert("Please enter at least one question!");
+
+            const questions = rawValue.split('\n').filter(q => q.trim() !== "");
+
+            loader.classList.remove('hidden');
+            resultsDiv.innerHTML = '';
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            try {
+                const res = await fetch('/ask-bulk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userInput: questions })
+                });
+
+                const data = await res.json();
+
+                loader.classList.add('hidden');
+                if (data.responses) {
+                    data.responses.forEach((text, i) => {
+                        const card = document.createElement('div');
+
+                        card.className = 'glass p-5 rounded-xl border-l-4 border-emerald-500 transition-all hover:bg-white/10';
+                        card.innerHTML = `
+                            <p class="text-xs text-emerald-400 font-mono mb-1">Response #${i + 1}</p>
+                            <p class="text-slate-200 leading-relaxed">${text}</p>
+                        `;
+                        resultsDiv.appendChild(card);
+                    });
+                } else {
+                    alert("Unexpected response format");
+                }
+
+            } catch (err) {
+                loader.classList.add('hidden');
+                alert("Error connecting to server. Make sure app.py is running.");
+
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        };
+    </script>
+</body>
+</html>

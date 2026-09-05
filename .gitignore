@@ -1,0 +1,14 @@
+# ── .gitignore - Helpify AI ──
+# Files and directories Git should ignore.
+
+# Secrets (MONGO_URI, GEMINI_API_KEY) — never commit credentials
+.env
+
+# Python bytecode cache — auto-generated, not needed in VCS
+__pycache__/
+
+# Compiled Python files — platform-specific, auto-generated
+*.pyc
+
+# Virtual environment — track deps via requirements.txt instead
+.venv/
