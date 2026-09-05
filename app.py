@@ -82,8 +82,17 @@ async def ask_bulk():
     # The prompt template is stored in MongoDB under the 'prompts'
     # collection.
     db = get_db()
+
     prompt_doc = await db.prompts.find_one({"_id": "Education_Prompt"})
-    template = prompt_doc['template']
+
+   if prompt_doc is None:
+          template = "You are an expert in given domain. Answer the following: {{userInput}}"
+          await db.prompts.insert_one({
+              "_id": "Education_Prompt",
+              "template": template
+          })
+   else:
+          template = prompt_doc["template"]
 
     # Trigger Parallel AI Tasks
     # Build a list of coroutines, one per question. Each coroutine
