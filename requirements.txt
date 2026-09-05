@@ -1,0 +1,4 @@
+Flask
+motor
+google-genai
+python-dotenv
