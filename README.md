@@ -53,8 +53,8 @@ Api_proj/
 **1. Clone the repo**
 
 ```bash
-git clone https://github.com/Swapnil-75/Intuccate_proj
-cd Api_proj
+git clone https://github.com/Sailee30/Intuccate_proj.git
+cd Intuccate_proj
 ```
 **2. Create a virtual environment**
 
@@ -72,8 +72,8 @@ pip install flask motor google-genai python-dotenv
 
 Create a `.env` file in the project root:
 ```env
-MONGO_URI=mongodb+srv://Swapie:swapie123@cluster0.4swqafd.mongodb.net/api_proj
-GEMINI_API_KEY=your_key_here
+MONGO_URI=your_mongodb_connection_string
+GEMINI_API_KEY=your_gemini_api_key
 ```
 **5. Start the server**
 
